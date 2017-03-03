@@ -1,0 +1,6 @@
+﻿  Game.cpp
+c:\users\riven\desktop\bcit 4th term\projects(4995 and 4932)\dx9_daniel_framework\game.cpp(324): warning C4101: 'LockedRect': unreferenced local variable
+c:\users\riven\desktop\bcit 4th term\projects(4995 and 4932)\dx9_daniel_framework\game.cpp(572): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1396): note: see declaration of '_vsnprintf'
+c:\users\riven\desktop\bcit 4th term\projects(4995 and 4932)\dx9_daniel_framework\game.cpp(303): warning C4715: 'Game::WndProc': not all control paths return a value
+  DX9_Daniel_Framework.vcxproj -> C:\Users\riven\Desktop\BCIT 4th Term\PROJECTS(4995 and 4932)\DX9_Daniel_Framework\Debug\DX9_Daniel_Framework.exe
