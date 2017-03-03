@@ -67,6 +67,11 @@ public:
 	D3DMATERIAL9*           g_pMeshMaterials = NULL; // Materials for our mesh
 	LPDIRECT3DTEXTURE9*     g_pMeshTextures = NULL; // Textures for our mesh
 
+	DWORD g_dwNumMaterials2 = 0L;   // Number of mesh materials  for 2nd model
+	LPD3DXMESH              g_pMesh2 = NULL; // Our 2nd mesh object in sysmem
+	D3DMATERIAL9*           g_pMeshMaterials2 = NULL; //2nd Materials for our mesh
+	LPDIRECT3DTEXTURE9*     g_pMeshTextures2 = NULL; // 2nd Textures for our mesh
+
 	HWND g_hWndMain;//handle to main window
 	LPDIRECT3DSURFACE9 backbuffer = NULL;	//backbuffer surface
 	LPDIRECT3DSURFACE9 surface = NULL;	//surface for bitmap
@@ -84,7 +89,8 @@ public:
 	//The main game loop that executes until the user quits the game
 	int GameLoop();
 	//Load the mesh and build the material and texture arrays
-	HRESULT InitGeometry(std::string);
+	HRESULT InitGeometry(char[]);
+	HRESULT InitGeometry2(char[]);
 	//Releases resources after game ends
 	int Cleanup();
 	//Sets up the world, view, and projection transform matrices
