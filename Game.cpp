@@ -94,7 +94,7 @@ int Game::GameInit() {
 		return E_FAIL;
 	}
 
-	result = InitDirect3DDevice(g_hWndMain, 512, 512, TRUE, D3DFMT_X8R8G8B8, g_pD3D, &g_pDevice); //4th param = windowed
+	result = InitDirect3DDevice(g_hWndMain, 1920, 1080, TRUE, D3DFMT_X8R8G8B8, g_pD3D, &g_pDevice); //4th param = windowed
 	if (FAILED(result)) {//FAILED is a macro that returns false if return value is a failure - safer than using value itself
 		SetError("Initialization of the device failed");
 		return E_FAIL;
@@ -109,8 +109,8 @@ int Game::GameInit() {
 
 	//create surface
 	result = g_pDevice->CreateOffscreenPlainSurface(
-		512,				//width of the surface
-		512,				//height of the surface
+		1000,				//width of the surface
+		1000,				//height of the surface
 		D3DFMT_X8R8G8B8,		//surface format
 		D3DPOOL_DEFAULT,	//memory pool to use
 		&surface,			//pointer to the surface
@@ -137,12 +137,12 @@ int Game::GameInit() {
 // Name: InitGeometry()
 // Desc: Load the mesh and build the material and texture arrays
 //-----------------------------------------------------------------------------
-HRESULT Game::InitGeometry(std::string meshName)
+HRESULT Game::InitGeometry(char fileName[])
 {
 	LPD3DXBUFFER pD3DXMtrlBuffer;
 
 	// Load the mesh from the specified file
-	if (FAILED(D3DXLoadMeshFromX("airplane 2.x", D3DXMESH_SYSTEMMEM, //"Tiger.x"
+	if (FAILED(D3DXLoadMeshFromX(TEXT(fileName), D3DXMESH_SYSTEMMEM, //"Tiger.x"
 		g_pDevice, NULL,
 		&pD3DXMtrlBuffer, NULL, &g_dwNumMaterials,
 		&g_pMesh)))
@@ -197,6 +197,74 @@ HRESULT Game::InitGeometry(std::string meshName)
 			}
 		}
 	}
+
+	
+
+	// Done with the material buffer
+	pD3DXMtrlBuffer->Release();
+
+	return S_OK;
+}
+
+
+//-----------------------------------------------------------------------------
+// Name: InitGeometry2()
+// Desc: Load the mesh and build the material and texture arrays
+//-----------------------------------------------------------------------------
+HRESULT Game::InitGeometry2(char fileName[])
+{
+	LPD3DXBUFFER pD3DXMtrlBuffer;
+
+	// Load the mesh from the specified file
+	if (FAILED(D3DXLoadMeshFromX(TEXT(fileName), D3DXMESH_SYSTEMMEM, 
+		g_pDevice, NULL,
+		&pD3DXMtrlBuffer, NULL, &g_dwNumMaterials2,
+		&g_pMesh2)))
+	{	
+			MessageBox(NULL, "Could not find .x file", "Meshes.exe", MB_OK);
+			return E_FAIL;
+	}
+
+	// We need to extract the material properties and texture names from the 
+	// pD3DXMtrlBuffer
+	D3DXMATERIAL* d3dxMaterials = (D3DXMATERIAL*)pD3DXMtrlBuffer->GetBufferPointer();
+	g_pMeshMaterials2 = new D3DMATERIAL9[g_dwNumMaterials2];
+	g_pMeshTextures2 = new LPDIRECT3DTEXTURE9[g_dwNumMaterials2];
+
+	for (DWORD i = 0; i<g_dwNumMaterials2; i++)
+	{
+		// Copy the material
+		g_pMeshMaterials2[i] = d3dxMaterials[i].MatD3D;
+
+		// Set the ambient color for the material (D3DX does not do this)
+		g_pMeshMaterials2[i].Ambient = g_pMeshMaterials2[i].Diffuse;
+
+		g_pMeshTextures2[i] = NULL;
+		if (d3dxMaterials[i].pTextureFilename != NULL &&
+			lstrlen(d3dxMaterials[i].pTextureFilename) > 0)
+		{
+			// Create the texture
+			if (FAILED(D3DXCreateTextureFromFile(g_pDevice,
+				d3dxMaterials[i].pTextureFilename,
+				&g_pMeshTextures2[i])))
+			{
+				// If texture is not in current folder, try parent folder
+				const TCHAR* strPrefix = TEXT("..\\");
+				const int lenPrefix = lstrlen(strPrefix);
+				TCHAR strTexture[MAX_PATH];
+				lstrcpyn(strTexture, strPrefix, MAX_PATH);
+				lstrcpyn(strTexture + lenPrefix, d3dxMaterials[i].pTextureFilename, MAX_PATH - lenPrefix);
+				// If texture is not in current folder, try parent folder
+				if (FAILED(D3DXCreateTextureFromFile(g_pDevice,
+					strTexture,
+					&g_pMeshTextures2[i])))
+				{
+					MessageBox(NULL, "Could not find texture map", "Meshes.exe", MB_OK);
+				}
+			}
+		}
+	}
+
 
 	// Done with the material buffer
 	pD3DXMtrlBuffer->Release();
@@ -357,6 +425,17 @@ int Game::Render() {
 
 			// Draw the mesh subset
 			g_pMesh->DrawSubset(i);
+		}
+
+
+		for (DWORD i = 0; i<g_dwNumMaterials2; i++)
+		{
+			// Set the material and texture for this subset
+			g_pDevice->SetMaterial(&g_pMeshMaterials2[i]);
+			g_pDevice->SetTexture(0, g_pMeshTextures2[i]);
+
+			// Draw the mesh subset
+			g_pMesh2->DrawSubset(i);
 		}
 
 		/*

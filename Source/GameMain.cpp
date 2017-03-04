@@ -52,10 +52,10 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, INT)
 	hWnd = CreateWindowEx(NULL,
 		strAppName,
 		strAppName,
-		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME, //no resizing
+		WS_OVERLAPPEDWINDOW,// ^ WS_THICKFRAME, //no resizing
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		512, 512,
+		1920, 1080,
 		NULL,
 		NULL,
 		hInst,
@@ -68,6 +68,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, INT)
 	if (game.GameInit()) {
 		// Create the scene geometry
 		if (SUCCEEDED(game.InitGeometry("Tiger.x"))) {
+			game.InitGeometry2("airplane 2.x");
 			ShowWindow(hWnd, SW_SHOWDEFAULT);
 			UpdateWindow(hWnd);
 
